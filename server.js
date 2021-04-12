@@ -1,56 +1,32 @@
 const express = require('express');
 const morgan = require('morgan');
+const campsiteRouter = require('./routes/campsiteRouter');
+const promotionRouter = require('./routes/promotionRouter');
+const partnerRouter = require('./routes/partnerRouter');
 
 const hostname = 'localhost';
 const port = 3000;
 
 const app = express();
+//returns express server application that's now available under variable app
+
 app.use(morgan('dev'));
+//inserts morgan middleware, dev configures morgan to log using the 
+//development version, which prints additional information to the screen
+
 app.use(express.json());
+//an express middleware function: when the server receives requests with json 
+//formatted data in the body, this middleware function will handle parsing that json data into js properties of the request object, so we can use that data in js
 
-app.all('/campsites', (req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    next();
-});
+app.use('/campsites', campsiteRouter);
+//because you provided the route path for the campsiteRouter here, this is why you don't need to specify in campsiteRouter.js 
 
-app.get('/campsites', (req, res) => {
-    res.end('Will send all the campsites to you');
-});
-
-app.post('/campsites', (req, res) => {
-    res.end(`Will add the campsite: ${req.body.name} with description: ${req.body.description}`);
-});
-
-app.put('/campsites', (req, res) => {
-    res.statusCode = 403;
-    res.end('PUT operation not supported on /campsites');
-});
-
-app.delete('/campsites', (req, res) => {
-    res.end('Deleting all campsites');
-});
-
-app.get('/campsites/:campsiteId', (req, res) => {
-    res.end(`Will send details of the campsite: ${req.params.campsiteID} to you`);
-});
-
-app.post('/campsites/:campsiteId', (req, res) => {
-    res.statusCode = 403;
-    res.end(`POST operation not supported on /campsites/${req.params.campsiteId}`);
-});
-
-app.put('/campsites/:campsiteId', (req, res) => {
-    res.write(`Updating the campsite: ${req.params.campsiteId}\n`);
-    res.end(`Will update the campsite: ${req.body.name}
-        with description: ${req.body.description}`);
-});
-
-app.delete('/campsites/:campsiteId', (req, res) => {
-    res.end(`Deleting campsite: ${req.params.campsiteId}`);
-});
+app.use('/promotions', promotionRouter);
+app.use('/partners', partnerRouter);
 
 app.use(express.static(__dirname + '/public'));
+//sets up express to serve files from the public folder
+//__dirname is special variable which refers to the absolute path of the current directory of the file that it's in
 
 app.use((req, res) => {
     res.statusCode = 200;
@@ -61,3 +37,4 @@ app.use((req, res) => {
 app.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
+//creates an instance of the http server class and starts listening to it
