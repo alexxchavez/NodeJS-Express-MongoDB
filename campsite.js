@@ -3,6 +3,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+require('mongoose-currency').loadType(mongoose);
+const Currency = mongoose.Types.Currency
+
 //used for documents storing comments about a campsite
 const commentSchema = new Schema({
     rating: {
@@ -32,6 +35,23 @@ const campsiteSchema = new Schema({
     description: {
         type: String,
         required: true
+    },
+    image: {
+        type: String,
+        required: true
+    },
+    elevation: {
+        type: Number,
+        required: true
+    },
+    cost: {
+        type: Currency,
+        required: true,
+        min: 0
+    },
+    featured: {
+        type: Boolean,
+        default: false
     },
     //allows every campsite document to be able to contain multiple comment documents stored in an array
     comments: [commentSchema]
